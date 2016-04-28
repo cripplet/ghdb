@@ -12,9 +12,9 @@ $(function() {
   var data_dir = getFile("");
   $("#error_dir").text(data_dir.success);
   if (data_dir.success) {
-    for (entry in data_dir.data) {
-      if (entry.type === "file") {
-        entry.content = btoa(getRaw(entry.download_url).data);
+    for (var i = 0; i < data_dir.data.length; i++) {
+      if (data_dir.data[i].type === "file") {
+        data_dir.data[i].content = btoa(getRaw(entry.download_url).data);
       }
     }
   }
