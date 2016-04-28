@@ -1,2 +1,2 @@
-# git-db
-GitHub-based K:V store
+# ghdb
+GitHub-based server-less K:V store
