@@ -22,7 +22,7 @@ $(function() {
   var data_upd = updFile("5jgkfenuhkycyoj2", "newnewnewnewnew content", data_get.data.sha);
   $("#error_upd").text(data_upd.success);
   $("#debug_upd").text(JSON.stringify(data_upd.data));
-  $("#data_upd").text(atob(data_upd.data.content));
+  $("#data_upd").text(data_upd.data.sha);
 });
 </script>
 
