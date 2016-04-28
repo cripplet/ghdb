@@ -1,4 +1,23 @@
 /**
+ * INSERT THINGS TO SAY HERE
+ */
+
+
+/**
+ * Gets the contents of all files in a directory.
+ */
+var getDir = function(path) {
+  var result = getFile(path);
+  if (result.success) {
+    for (var i = 0; i < result.data.length; i++) {
+      result.data[i].content = btoa(getRaw(result.data[i].download_url).data);
+    }
+  }
+  return result;
+}
+
+
+/**
  * Downloads data from raw GitHub file endpoint.
  */
 var getRaw = function(url) {
