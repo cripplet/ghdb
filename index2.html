@@ -13,6 +13,12 @@ var submitConfig = function(form) {
   // $(form).children()
 }
 
+function populate(frm, data) {
+  $.each(data, function(key, value){
+    $('[name=' + key + ']', frm).val(value);
+  });
+}
+
 $(function() {
   $("#config").children("input").each(function() {
     window.alert(this.value);
