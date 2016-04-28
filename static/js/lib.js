@@ -23,6 +23,8 @@ var getFile = function(path) {
     url: getEndpoint(path),
     dataType: "json",
     contentType: "application/json",
+    xhrFields: { withCredentials: false },
+    headers: { 'Authorization': "Basic " + btoa(username + ":" + password) },
     async: false,
     success: function(resp) {
       success = true;
