@@ -9,7 +9,9 @@
 
 <script type="text/javascript">
 $(function() {
-  var data_add = addFile("SOMEF", "some text here");
+  var filename = (Math.random().toString(36)+'00000000000000000').slice(2, 18)
+
+  var data_add = addFile(filename, "some text here");
   $("#error_add").text(data_add.success);
   $("#debug_add").text(JSON.stringify(data_add.data));
   $("#data_add").text(data_add.data.name);
