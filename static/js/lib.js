@@ -59,6 +59,7 @@ var addFile = function(path, content, el_status, el_debug, el_data) {
     success: function(resp) {
       el_status.text("success");
       el_debug.text(JSON.stringify(resp));
+      el_data.text(resp.content.name);
     },
     error: function(req) {
       el_status.text("failure");
