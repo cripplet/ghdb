@@ -10,6 +10,10 @@ var username = "cripplet-db";
 var password = "6f920f50f5c81308ee0" + "aad463a40ac83b4cd5b16";
 var repo = "db";
 
+
+/**
+ * Downloads data from raw GitHub file endpoint.
+ */
 var getRaw = function(url) {
   var success = null;
   var data = null;
@@ -34,9 +38,14 @@ var getRaw = function(url) {
   };
 };
 
+
+/**
+ * Constructs the appropriate GitHub API endpoint.
+ */
 var getEndpoint = function(path) {
   return "https://api.github.com/repos/" + username + "/" + repo + "/contents/" + path;
 };
+
 
 var getFile = function(path) {
   var success = null;
@@ -65,6 +74,7 @@ var getFile = function(path) {
     "data": data,
   };
 }
+
 
 var delFile = function(path) {
   var file = getFile(path);
@@ -108,6 +118,7 @@ var delFile = function(path) {
   };
 };
 
+
 var updFile = function(path, content) {
   var file = getFile(path);
   
@@ -150,6 +161,7 @@ var updFile = function(path, content) {
     "data": data
   };
 };
+
 
 var addFile = function(path, content) {
   var success = null;
