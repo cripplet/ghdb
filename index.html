@@ -9,6 +9,10 @@
 
 <script type="text/javascript">
 $(function() {
+  var data_dir = getFile("");
+  $("#error_dir").text(data_dir.success);
+  $("#debug_dir").text(data_dir.data);
+
   var filename = (Math.random().toString(36)+'00000000000000000').slice(2, 18)
 
   var data_add = addFile(filename, "some text here");
@@ -35,6 +39,10 @@ $(function() {
 
 </head>
 <body>
+
+<div id="error_dir"></div>
+<div id="debug_dir"></div>
+<div id="data_dir"></div>
 
 <div id="error_add"></div>
 <div id="debug_add"></div>
