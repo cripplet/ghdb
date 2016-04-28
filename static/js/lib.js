@@ -10,6 +10,30 @@ var username = "cripplet-db";
 var password = "6f920f50f5c81308ee0" + "aad463a40ac83b4cd5b16";
 var repo = "db";
 
+var getRaw = function(url) {
+  var success = null;
+  var data = null;
+  
+  $.ajax({
+    type: "GET",
+    url: url,
+    async: false,
+    success: function(resp) {
+      success = true;
+      data = resp;
+    },
+    error: function(req) {
+      success = false;
+      data = req;
+    }
+  });
+  
+  return {
+    "success": success,
+    "data": data
+  };
+};
+
 var getEndpoint = function(path) {
   return "https://api.github.com/repos/" + username + "/" + repo + "/contents/" + path;
 };
