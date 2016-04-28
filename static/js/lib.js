@@ -44,6 +44,46 @@ var getFile = function(path) {
   };
 }
 
+var delFile = function(path, sha) {
+  var success = null;
+  var data = null;
+  
+  var payload = {
+    "sha": sha,
+    "path": path,
+    "message": "deleted " + path,
+    "committer": {
+      "name": name,
+      "email": email
+    },
+    "content": btoa(content)
+  }
+  
+  $.ajax({
+    type: "DELETE",
+    url: getEndpoint(path),
+    dataType: "json",
+    contentType: "application/json",
+    xhrFields: { withCredentials: false },
+    headers: { 'Authorization': "Basic " + btoa(username + ":" + password) },
+    data: JSON.stringify(payload),
+    async: false,
+    success: function(resp) {
+      success = true;
+      data = resp;
+    },
+    error: function(req) {
+      success = false;
+      data = req;
+    }
+  });
+  
+  return {
+    "success": success,
+    "data": data
+  };
+};
+
 var updFile = function(path, content, sha) {
   var success = null;
   var data = null;
@@ -60,7 +100,7 @@ var updFile = function(path, content, sha) {
   }
   
   $.ajax({
-    type: "PUT",  // not POST for some reason
+    type: "PUT",
     url: getEndpoint(path),
     dataType: "json",
     contentType: "application/json",
