@@ -54,6 +54,7 @@ var getFile = function(path, el_status, el_debug, el_data, async) {
 
 var updFile = function(path, content, sha, el_status, el_debug, el_data, async) {
   var payload = {
+    "sha": sha,
     "path": path,
     "message": "updated " + path,
     "committer": {
