@@ -13,7 +13,9 @@ var submitConfig = function(form) {
   // $(form).children()
 }
 $(function() {
-  window.alert(JSON.stringify($("#config:input").children()));
+  $("#config").each(function(index) {
+    this.text(this.attr("name"));
+  });
   /**
   var gh = new GitHub({
      username: username,
