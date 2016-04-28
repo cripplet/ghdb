@@ -18,7 +18,7 @@ var getMockPath = function() {
   return (Math.random().toString(36)+'00000000000000000').slice(2, 16+2)
 };
 
-var addFile = function(path, content) {
+var addFile = function(path, content, el_status, el_data) {
   path = getMockPath();
   var payload = {
     "path": path,
@@ -39,10 +39,12 @@ var addFile = function(path, content) {
     headers: { 'Authorization': "Basic " + btoa(username + ":" + key) },
     data: JSON.stringify(payload),
     success: function(response) {
-      return {"status": "success", "data": response};
+      el_status.text("success");
+      el_data.text(response);
     },
     error: function(request) {
-      return {"status": "failure", "data": request};
+      el_status.text("failure");
+      el_data.text(request);
     }
   });
 };
