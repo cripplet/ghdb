@@ -26,11 +26,11 @@ var getFile = function(path, el_status, el_data) {
     contentType: "application/json",
     success: function(resp) {
       el_status.text("success");
-      el_data.text(resp);
+      el_data.text(JSON.stringify(resp));
     },
     error: function(req) {
       el_status.text("failure");
-      el_data.text(req);
+      el_data.text(JSON.stringify(req));
     }
   });
 }
@@ -57,11 +57,11 @@ var addFile = function(path, content, el_status, el_data) {
     data: JSON.stringify(payload),
     success: function(resp) {
       el_status.text("success");
-      el_data.text(resp);
+      el_data.text(JSON.stringify(resp));
     },
     error: function(req) {
       el_status.text("failure");
-      el_data.text(req);
+      el_data.text(JSON.stringify(req));
     }
   });
 };
