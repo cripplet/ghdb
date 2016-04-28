@@ -10,15 +10,8 @@
 
 <script type="text/javascript">
 $(function() {
-  var data_dir = getFile("");
+  var data_dir = getDir("");
   $("#error_dir").text(data_dir.success);
-  if (data_dir.success) {
-    for (var i = 0; i < data_dir.data.length; i++) {
-      if (data_dir.data[i].type === "file") {
-        data_dir.data[i].content = btoa(getRaw(data_dir.data[i].download_url).data);
-      }
-    }
-  }
   $("#debug_dir").text(JSON.stringify(data_dir.data));
 
   var filename = (Math.random().toString(36)+'00000000000000000').slice(2, 18)
