@@ -14,19 +14,19 @@ var repo = "db";
  * vars = { "name": NAME, ... }
  */
 var configure = function(vars) {
-  if vars.hasOwnProperty("name") {
+  if (vars.hasOwnProperty("name")) {
     name = vars.name;
   }
-  if vars.hasOwnProperty("email") {
+  if (vars.hasOwnProperty("email")) {
     email = vars.email;
   }
-  if vars.hasOwnProperty("username") {
+  if (vars.hasOwnProperty("username")) {
     username = vars.username;
   }
-  if vars.hasOwnProperty("password") {
+  if (vars.hasOwnProperty("password")) {
     password = vars.password;
   }
-  if vars.hasOwnProperty("repo") {
+  if (vars.hasOwnProperty("repo")) {
     repo = vars.repo;
   }
 }
