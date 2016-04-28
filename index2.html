@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html prefix="og: http://ogp.me/ns# article: http://ogp.me/ns/article# " vocab="http://ogp.me/ns" lang="en">
+<head>
+
+<meta charset="utf-8">
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+<script type="text/javascript" src="/static/js/config.js"></script>
+<script type="text/javascript" src="/static/libs/github-api/1.0.0/GitHub.bundle.min.js"></script>
+
+<script type="text/javascript">
+$(function() {
+  configure({"username": "cripplet-db"});
+
+  var gh = new GitHub({
+     username: username,
+     password: password
+  });
+
+  var cripplet = gh.getUser('cripplet');
+  $("#error_dir").text(JSON.stringify(cripplet));
+</script>
+
+</head>
+<body>
+
+<div id="error_dir"></div>
+<div id="debug_dir"></div>
+<div id="data_dir"></div>
+
+<div id="error_add"></div>
+<div id="debug_add"></div>
+<div id="data_add"></div>
+
+<div id="error_get"></div>
+<div id="debug_get"></div>
+<div id="data_get"></div>
+
+<div id="error_upd"></div>
+<div id="debug_upd"></div>
+<div id="data_upd"></div>
+
+<div id="error_del"></div>
+<div id="debug_del"></div>
+<div id="data_del"></div>
+
+</body>
+</html>
