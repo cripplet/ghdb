@@ -14,7 +14,7 @@ $(function() {
   if (data_dir.success) {
     for (var i = 0; i < data_dir.data.length; i++) {
       if (data_dir.data[i].type === "file") {
-        data_dir.data[i].content = btoa(getRaw(entry.download_url).data);
+        data_dir.data[i].content = btoa(getRaw(data_dir.data[i].download_url).data);
       }
     }
   }
