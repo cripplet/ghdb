@@ -12,7 +12,7 @@ var repo = "db";
 /**
  * vars = { "name": NAME, ... }
  */
-var configure == function(vars) {
+var configure = function(vars) {
   if vars.hasOwnProperty("name") {
     name = vars.name;
   }
