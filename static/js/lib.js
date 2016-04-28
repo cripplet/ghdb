@@ -18,7 +18,7 @@ var getMockPath = function() {
   return (Math.random().toString(36)+'00000000000000000').slice(2, 16+2)
 };
 
-var getFile = function(path, content, el_status, el_data) {
+var getFile = function(path, el_status, el_data) {
   $.ajax({
     type: "GET",
     url: getEndpoint(path),
