@@ -18,7 +18,7 @@ var getMockPath = function() {
   return (Math.random().toString(36)+'00000000000000000').slice(2, 16+2)
 };
 
-var getFile = function(path, el_status = null, el_debug = null, el_data = null) {
+var getFile = function(path, el_status = null, el_debug = null, el_data = null, async = true) {
   var sha = null;
 
   $.ajax({
@@ -26,7 +26,7 @@ var getFile = function(path, el_status = null, el_debug = null, el_data = null) 
     url: getEndpoint(path),
     dataType: "json",
     contentType: "application/json",
-    async: false,
+    async: async,
     success: function(resp) {
       if (el_status !== null) {
         el_status.text("success");
