@@ -40,7 +40,10 @@ var getFile = function(path) {
   };
 }
 
-var delFile = function(path, sha) {
+var delFile = function(path) {
+  var file = getFile(path);
+  
+  var sha = file.data.sha;
   var success = null;
   var data = null;
   
@@ -79,7 +82,10 @@ var delFile = function(path, sha) {
   };
 };
 
-var updFile = function(path, content, sha) {
+var updFile = function(path, content) {
+  var file = getFile(path);
+  
+  var sha = file.data.sha;
   var success = null;
   var data = null;
   
