@@ -2,9 +2,30 @@
  * Params file for lib.js.
  */
 
-const name = "Minke Zhang";
-const email = "minke.zhang@gmail.com";
+var name = "Minke Zhang";
+var email = "minke.zhang@gmail.com";
 
-const username = "cripplet-db";
-const password = "6f920f50f5c81308ee0" + "aad463a40ac83b4cd5b16";
-const repo = "db";
+var username = "cripplet-db";
+var password = "6f920f50f5c81308ee0" + "aad463a40ac83b4cd5b16";
+var repo = "db";
+
+/**
+ * vars = { "name": NAME, ... }
+ */
+var configure == function(vars) {
+  if vars.hasOwnProperty("name") {
+    name = vars.name;
+  }
+  if vars.hasOwnProperty("email") {
+    email = vars.email;
+  }
+  if vars.hasOwnProperty("username") {
+    username = vars.username;
+  }
+  if vars.hasOwnProperty("password") {
+    password = vars.password;
+  }
+  if vars.hasOwnProperty("repo") {
+    repo = vars.repo;
+  }
+}
