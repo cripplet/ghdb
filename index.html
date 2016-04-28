@@ -14,15 +14,20 @@ $(function() {
   $("#debug_add").text(JSON.stringify(data_add.data));
   $("#data_add").text(data_add.data.name);
   
-  var data_get = getFile("5jgkfenuhkycyoj2");
+  var data_get = getFile(data_add.data.name);
   $("#error_get").text(data_get.success);
   $("#debug_get").text(JSON.stringify(data_get.data));
   $("#data_get").text(atob(data_get.data.content));
   
-  var data_upd = updFile("5jgkfenuhkycyoj2", "newnewnewnewnew content", data_get.data.sha);
+  var data_upd = updFile(data_add.data.name, "newnewnewnewnew content", data_get.data.sha);
   $("#error_upd").text(data_upd.success);
   $("#debug_upd").text(JSON.stringify(data_upd.data));
   $("#data_upd").text(data_upd.data.sha);
+  
+  var data_del = delFile(data_add.data.name, data_upd.data.sha);
+  $("#error_del").text(data_del.success);
+  $("#debug_del").text(JSON.stringify(data_del.data));
+  $("#data_del").text(data_del.data.commit.sha);
 });
 </script>
 
