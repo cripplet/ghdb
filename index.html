@@ -24,7 +24,7 @@ $(function() {
   var data_upd = updFile(data_add.data.content.name, "newnewnewnewnew content", data_get.data.sha);
   $("#error_upd").text(data_upd.success);
   $("#debug_upd").text(JSON.stringify(data_upd.data));
-  $("#data_upd").text(data_upd.data.sha);
+  $("#data_upd").text(data_upd.data.content.sha);
   
   var data_del = delFile(data_add.data.content.name, data_upd.data.sha);
   $("#error_del").text(data_del.success);
