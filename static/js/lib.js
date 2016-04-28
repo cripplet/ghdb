@@ -52,8 +52,7 @@ var delFile = function(path, sha) {
       "name": name,
       "email": email
     },
-    "content": btoa(content)
-  }
+  };
   
   $.ajax({
     type: "DELETE",
@@ -93,7 +92,7 @@ var updFile = function(path, content, sha) {
       "email": email
     },
     "content": btoa(content)
-  }
+  };
   
   $.ajax({
     type: "PUT",
@@ -132,7 +131,7 @@ var addFile = function(path, content) {
       "email": email
     },
     "content": btoa(content)
-  }
+  };
   
   $.ajax({
     type: "PUT",  // not POST for some reason
@@ -152,6 +151,7 @@ var addFile = function(path, content) {
       data = req;
     }
   });
+  
   return {
     "success": success,
     "data": data
