@@ -17,7 +17,7 @@ $(function() {
   });
 
   var db = gh.getRepo(username, repo);
-  db.getContents("master", "test_file").then(
+  db.getContents("master", "").then(
     function(success) {
       $("#error_dir").text("success");
       $("#debug_dir").text(JSON.stringify(success));
