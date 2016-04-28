@@ -26,6 +26,7 @@ var getFile = function(path, el_status = null, el_debug = null, el_data = null) 
     url: getEndpoint(path),
     dataType: "json",
     contentType: "application/json",
+    async: false,
     success: function(resp) {
       if (el_status !== null) {
         el_status.text("success");
