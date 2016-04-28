@@ -9,8 +9,9 @@
 
 <script type="text/javascript">
 $(function() {
-  addFile("fakefile", "some text here", $("#error_add"), $("#debug_add"), $("#data_add"));
-  var sha = getFile("5jgkfenuhkycyoj2", $("#error_get"), $("#debug_get"), $("#data_get"), async = false);
+  addFile("fakefile", "some text here", $("#error_add"), $("#debug_add"), $("#data_add"), true);
+  var sha = getFile("5jgkfenuhkycyoj2", $("#error_get"), $("#debug_get"), $("#data_get"), false);
+  sha = updFile("5jgkfenuhkycyoj2", "new content", sha, $("#error_upd"), $("#debug_upd"), $("#data_upd"), false);
   window.alert(sha);
 });
 </script>
