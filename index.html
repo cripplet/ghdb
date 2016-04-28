@@ -11,8 +11,15 @@
 $(function() {
   var data_dir = getFile("");
   $("#error_dir").text(data_dir.success);
+  if (data_dir.success) {
+    for (entry in data_dir.data) {
+      if (entry.type === "file") {
+        entry.content = btoa(getRaw(entry.download_url).data);
+      }
+    }
+  }
   $("#debug_dir").text(JSON.stringify(data_dir.data));
-  $("#data_dir").text(getRaw("https://raw.githubusercontent.com/cripplet-db/db/master/test_file"));
+  $("#data_dir").text(JSON.stringify(getRaw("https://raw.githubusercontent.com/cripplet-db/db/master/test_file"));
 
   var filename = (Math.random().toString(36)+'00000000000000000').slice(2, 18)
 
