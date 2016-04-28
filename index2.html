@@ -15,8 +15,12 @@ $(function() {
      username: username,
      password: password
   });
-
+  var Repository.prototype.getDir = function(ref, path) {
+    window.alert([ref, path]);
+  }
+  
   var db = gh.getRepo(username, repo);
+  db.getDir("master", "some/path");
   db.getContents("master", "", true).then(
     function(success) {
       $("#error_dir").text("success");
