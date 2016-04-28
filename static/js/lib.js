@@ -1,6 +1,3 @@
-import { name, email, username, password, repo } from 'config';
-
-
 /**
  * Downloads data from raw GitHub file endpoint.
  */
