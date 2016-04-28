@@ -36,15 +36,15 @@ var addFile = function(path, content, el_status, el_data) {
     dataType: "json",
     contentType: "application/json",
     xhrFields: { withCredentials: false },
-    headers: { 'Authorization': "Basic " + btoa(username + ":" + key) },
+    headers: { 'Authorization': "Basic " + btoa(username + ":" + password) },
     data: JSON.stringify(payload),
-    success: function(response) {
+    success: function(resp) {
       el_status.text("success");
-      el_data.text(response);
+      el_data.text(resp);
     },
-    error: function(request) {
+    error: function(req) {
       el_status.text("failure");
-      el_data.text(request);
+      el_data.text(req);
     }
   });
 };
