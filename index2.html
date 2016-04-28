@@ -13,7 +13,7 @@ var submitConfig = function(form) {
   // $(form).children()
 }
 $(function() {
-  $("#config").each(function(index) {
+  $("#config").children().each(function(index) {
     this.text(this.attr("name"));
   });
   /**
