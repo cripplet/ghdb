@@ -10,7 +10,8 @@
 <script type="text/javascript">
 $(function() {
   addFile("fakefile", "some text here", $("#error_add"), $("#debug_add"), $("#data_add"));
-  window.alert(getFile("5jgkfenuhkycyoj2", $("#error_get"), $("#debug_get"), $("#data_get")));
+  var sha = getFile("5jgkfenuhkycyoj2", $("#error_get"), $("#debug_get"), $("#data_get"), async = false);
+  window.alert(sha);
 });
 </script>
 
