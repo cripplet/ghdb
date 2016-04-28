@@ -12,10 +12,10 @@
 var submitConfig = function(form) {
   // $(form).children()
 }
+
 $(function() {
-  $("#config").children().each(function(index) {
-    var input = $(this);
-    $input.text($input.attr("name"));
+  $("#config").children("input").each(function() {
+    window.alert(this.value);
   });
   /**
   var gh = new GitHub({
