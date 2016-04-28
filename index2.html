@@ -16,8 +16,9 @@ $(function() {
      password: password
   });
 
-  var cripplet = gh.getUser('cripplet');
-  $("#error_dir").text(JSON.stringify(cripplet))
+  var db = gh.getRepo(username, repo);
+  var result = db.getContents("master", "test_file");
+  $("#error_dir").text(JSON.stringify(result))
 });
 </script>
 
