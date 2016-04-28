@@ -13,8 +13,8 @@ var submitConfig = function(form) {
   // $(form).children()
 }
 $(function() {
-  $("#config").children().each(function(index) {
-    this.text(this.attr("name"));
+  $("#config").children().each(function(index, el) {
+    el.text(el.attr("name"));
   });
   /**
   var gh = new GitHub({
