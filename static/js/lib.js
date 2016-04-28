@@ -4,6 +4,28 @@
 
 
 /**
+ * vars = { "name": NAME, ... }
+ */
+var configure = function(vars) {
+  if (vars.hasOwnProperty("name")) {
+    name = vars.name;
+  }
+  if (vars.hasOwnProperty("email")) {
+    email = vars.email;
+  }
+  if (vars.hasOwnProperty("username")) {
+    username = vars.username;
+  }
+  if (vars.hasOwnProperty("password")) {
+    password = vars.password;
+  }
+  if (vars.hasOwnProperty("repo")) {
+    repo = vars.repo;
+  }
+}
+
+
+/**
  * Gets the contents of all files in a directory.
  */
 var getDir = function(path) {
