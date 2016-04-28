@@ -18,7 +18,7 @@ var getMockPath = function() {
   return (Math.random().toString(36)+'00000000000000000').slice(2, 16+2)
 };
 
-var getFile = function(path, el_status = null, el_debug = null, el_data = null, async = true) {
+var getFile = function(path, el_status, el_debug, el_data, async = true) {
   var sha = null;
 
   $.ajax({
@@ -52,7 +52,52 @@ var getFile = function(path, el_status = null, el_debug = null, el_data = null, 
   return sha;
 }
 
-var addFile = function(path, content, el_status, el_debug, el_data) {
+var updFile = function(path, content, sha, el_status, el_debug, el_data, async = true) {
+  var payload = {
+    "path": path,
+    "message": "updated " + path,
+    "committer": {
+      "name": name,
+      "email": email
+    },
+    "content": btoa(content)
+  }
+  
+  $.ajax({
+    type: "PUT",  // not POST for some reason
+    url: getEndpoint(path),
+    dataType: "json",
+    contentType: "application/json",
+    xhrFields: { withCredentials: false },
+    headers: { 'Authorization': "Basic " + btoa(username + ":" + password) },
+    data: JSON.stringify(payload),
+    async: async,
+    success: function(resp) {
+      if (el_status !== null) {
+        el_status.text("success");
+      }
+      if (el_debug !== null) {
+        el_debug.text(JSON.stringify(resp));
+      }
+      if (el_data !== null) {
+        el_data.text(resp.content.name);
+      }
+      sha = resp.content.sha;
+    },
+    error: function(req) {
+      if (el_status !== null) {
+        el_status.text("failure");
+      }
+      if (el_debug !== null) {
+        el_debug.text(JSON.stringify(req));
+      }
+    }
+  });
+  return sha;
+};
+
+var addFile = function(path, content, el_status, el_debug, el_data, async = true) {
+  var sha = null;
   path = getMockPath();
 
   var payload = {
@@ -73,6 +118,7 @@ var addFile = function(path, content, el_status, el_debug, el_data) {
     xhrFields: { withCredentials: false },
     headers: { 'Authorization': "Basic " + btoa(username + ":" + password) },
     data: JSON.stringify(payload),
+    async: async,
     success: function(resp) {
       if (el_status !== null) {
         el_status.text("success");
@@ -83,6 +129,7 @@ var addFile = function(path, content, el_status, el_debug, el_data) {
       if (el_data !== null) {
         el_data.text(resp.content.name);
       }
+      sha = resp.content.sha;
     },
     error: function(req) {
       if (el_status !== null) {
@@ -93,4 +140,5 @@ var addFile = function(path, content, el_status, el_debug, el_data) {
       }
     }
   });
+  return sha;
 };
