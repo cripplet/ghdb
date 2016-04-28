@@ -18,41 +18,36 @@ var getMockPath = function() {
   return (Math.random().toString(36)+'00000000000000000').slice(2, 16+2)
 };
 
-var getFile = function(path, el_status, el_debug, el_data, async) {
-  var sha = null;
+var getFile = function(path) {
+  var success = null;
+  var data = null;
 
   $.ajax({
     type: "GET",
     url: getEndpoint(path),
     dataType: "json",
     contentType: "application/json",
-    async: async,
+    async: false,
     success: function(resp) {
-      if (el_status !== null) {
-        el_status.text("success");
-      }
-      if (el_debug !== null) {
-        el_debug.text(JSON.stringify(resp));
-      }
-      if (el_data !== null) {
-        el_data.text(atob(resp.content));
-      }
-      sha = resp.sha;
+      success = true;
+      data = resp;
     },
     error: function(req) {
-      if (el_status !== null) {
-        el_status.text("failure");
-      }
-      if (el_debug !== null) {
-        el_debug.text(JSON.stringify(req));
-      }
+      success = false;
+      data = req;
     }
   });
 
-  return sha;
+  return {
+    "success": success,
+    "data": data,
+  };
 }
 
-var updFile = function(path, content, sha, el_status, el_debug, el_data, async) {
+var updFile = function(path, content, sha) {
+  var success = null;
+  var data = null;
+  
   var payload = {
     "sha": sha,
     "path": path,
@@ -72,33 +67,27 @@ var updFile = function(path, content, sha, el_status, el_debug, el_data, async) 
     xhrFields: { withCredentials: false },
     headers: { 'Authorization': "Basic " + btoa(username + ":" + password) },
     data: JSON.stringify(payload),
-    async: async,
+    async: false,
     success: function(resp) {
-      if (el_status !== null) {
-        el_status.text("success");
-      }
-      if (el_debug !== null) {
-        el_debug.text(JSON.stringify(resp));
-      }
-      if (el_data !== null) {
-        el_data.text(resp.content.name);
-      }
-      sha = resp.content.sha;
+      success = true;
+      data = resp;
     },
     error: function(req) {
-      if (el_status !== null) {
-        el_status.text("failure");
-      }
-      if (el_debug !== null) {
-        el_debug.text(JSON.stringify(req));
-      }
+      success = false;
+      data = req;
     }
   });
-  return sha;
+  
+  return {
+    "success": success,
+    "data": data
+  };
 };
 
-var addFile = function(path, content, el_status, el_debug, el_data, async) {
-  var sha = null;
+var addFile = function(path, content) {
+  var success = null;
+  var data = null;
+
   path = getMockPath();
 
   var payload = {
@@ -119,27 +108,18 @@ var addFile = function(path, content, el_status, el_debug, el_data, async) {
     xhrFields: { withCredentials: false },
     headers: { 'Authorization': "Basic " + btoa(username + ":" + password) },
     data: JSON.stringify(payload),
-    async: async,
+    async: false,
     success: function(resp) {
-      if (el_status !== null) {
-        el_status.text("success");
-      }
-      if (el_debug !== null) {
-        el_debug.text(JSON.stringify(resp));
-      }
-      if (el_data !== null) {
-        el_data.text(resp.content.name);
-      }
-      sha = resp.content.sha;
+      success = true;
+      data = resp;
     },
     error: function(req) {
-      if (el_status !== null) {
-        el_status.text("failure");
-      }
-      if (el_debug !== null) {
-        el_debug.text(JSON.stringify(req));
-      }
+      success = false;
+      data = req;
     }
   });
-  return sha;
+  return {
+    "success": success,
+    "data": data
+  };
 };
