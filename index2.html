@@ -9,18 +9,18 @@
 <script type="text/javascript" src="/static/libs/github-api/1.0.0/GitHub.bundle.js"></script>
 
 <script type="text/javascript">
+var submitConfig = function(form) {
+  // $(form).children()
+}
 $(function() {
-
+  window.alert(JSON.stringify($("#config").children()));
+  /**
   var gh = new GitHub({
      username: username,
      password: password
   });
-  Repository.prototype.getDir = function(ref, path) {
-    window.alert([ref, path]);
-  }
   
   var db = gh.getRepo(username, repo);
-  db.getDir("master", "some/path");
   db.getContents("master", "", true).then(
     function(success) {
       $("#error_dir").text("success");
@@ -29,12 +29,21 @@ $(function() {
       $("#error_dir").text("failure");
       $("#debug_dir").text(JSON.stringify(failure));
     }
-  );
+  ); */
 });
 </script>
 
 </head>
 <body>
+
+<form id="config">
+  <input type="text" name="name" value="" />
+  <input type="email" name="email" value="" />
+  <input type="text" name="username" value="" />
+  <input type="password" name="password" value="" />
+  <input type="text" name="repo" />
+  <button onClick="submitConfig('#config')">Config</button>
+</form>
 
 <div id="error_dir"></div>
 <div id="debug_dir"></div>
