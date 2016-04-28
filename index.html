@@ -11,7 +11,7 @@
 $(function() {
   var data_dir = getFile("");
   $("#error_dir").text(data_dir.success);
-  $("#debug_dir").text(data_dir.data);
+  $("#debug_dir").text(JSON.stringify(data_dir.data));
 
   var filename = (Math.random().toString(36)+'00000000000000000').slice(2, 18)
 
