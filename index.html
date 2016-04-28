@@ -26,7 +26,7 @@ $(function() {
   $("#debug_upd").text(JSON.stringify(data_upd.data));
   $("#data_upd").text(data_upd.data.content.sha);
   
-  var data_del = delFile(data_add.data.content.name, data_upd.data.sha);
+  var data_del = delFile(data_add.data.content.name, data_upd.data.content.sha);
   $("#error_del").text(data_del.success);
   $("#debug_del").text(JSON.stringify(data_del.data));
   $("#data_del").text(data_del.data.commit.sha);
