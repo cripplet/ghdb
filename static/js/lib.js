@@ -18,7 +18,7 @@ var getMockPath = function() {
   return (Math.random().toString(36)+'00000000000000000').slice(2, 16+2)
 };
 
-var getFile = function(path, el_status, el_debug, el_data, async = true) {
+var getFile = function(path, el_status, el_debug, el_data, async) {
   var sha = null;
 
   $.ajax({
@@ -52,7 +52,7 @@ var getFile = function(path, el_status, el_debug, el_data, async = true) {
   return sha;
 }
 
-var updFile = function(path, content, sha, el_status, el_debug, el_data, async = true) {
+var updFile = function(path, content, sha, el_status, el_debug, el_data, async) {
   var payload = {
     "path": path,
     "message": "updated " + path,
@@ -96,7 +96,7 @@ var updFile = function(path, content, sha, el_status, el_debug, el_data, async =
   return sha;
 };
 
-var addFile = function(path, content, el_status, el_debug, el_data, async = true) {
+var addFile = function(path, content, el_status, el_debug, el_data, async) {
   var sha = null;
   path = getMockPath();
 
