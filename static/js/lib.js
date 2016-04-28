@@ -18,6 +18,23 @@ var getMockPath = function() {
   return (Math.random().toString(36)+'00000000000000000').slice(2, 16+2)
 };
 
+var getFile = function(path, content, el_status, el_data) {
+  $.ajax({
+    type: "GET",
+    url: getEndpoint(path),
+    dataType: "json",
+    contentType: "application/json",
+    success: function(resp) {
+      el_status.text("success");
+      el_data.text(resp);
+    },
+    error: function(req) {
+      el_status.text("failure");
+      el_data.text(req);
+    }
+  });
+}
+
 var addFile = function(path, content, el_status, el_data) {
   path = getMockPath();
   var payload = {
