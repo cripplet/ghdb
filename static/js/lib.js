@@ -14,10 +14,6 @@ var getEndpoint = function(path) {
   return "https://api.github.com/repos/" + username + "/" + repo + "/contents/" + path;
 };
 
-var getMockPath = function() {
-  return (Math.random().toString(36)+'00000000000000000').slice(2, 16+2)
-};
-
 var getFile = function(path) {
   var success = null;
   var data = null;
@@ -127,8 +123,6 @@ var updFile = function(path, content, sha) {
 var addFile = function(path, content) {
   var success = null;
   var data = null;
-
-  path = getMockPath();
 
   var payload = {
     "path": path,
