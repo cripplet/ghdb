@@ -21,12 +21,12 @@ $(function() {
   $("#debug_get").text(JSON.stringify(data_get.data));
   $("#data_get").text(atob(data_get.data.content));
   
-  var data_upd = updFile(data_add.data.content.name, "newnewnewnewnew content", data_get.data.sha);
+  var data_upd = updFile(data_add.data.content.name, "newnewnewnewnew content");
   $("#error_upd").text(data_upd.success);
   $("#debug_upd").text(JSON.stringify(data_upd.data));
   $("#data_upd").text(data_upd.data.content.sha);
   
-  var data_del = delFile(data_add.data.content.name, data_upd.data.content.sha);
+  var data_del = delFile(data_add.data.content.name);
   $("#error_del").text(data_del.success);
   $("#debug_del").text(JSON.stringify(data_del.data));
   $("#data_del").text(data_del.data.commit.sha);
