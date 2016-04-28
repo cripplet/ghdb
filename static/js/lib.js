@@ -18,7 +18,7 @@ var getMockPath = function() {
   return (Math.random().toString(36)+'00000000000000000').slice(2, 16+2)
 };
 
-var getFile = function(path, el_status, el_data) {
+var getFile = function(path, el_status, el_debug, el_data) {
   $.ajax({
     type: "GET",
     url: getEndpoint(path),
@@ -26,16 +26,17 @@ var getFile = function(path, el_status, el_data) {
     contentType: "application/json",
     success: function(resp) {
       el_status.text("success");
-      el_data.text(JSON.stringify(resp));
+      el_debug.text(JSON.stringify(resp));
+      el_data.text(atob(resp.content));
     },
     error: function(req) {
       el_status.text("failure");
-      el_data.text(JSON.stringify(req));
+      el_debug.text(JSON.stringify(req));
     }
   });
 }
 
-var addFile = function(path, content, el_status, el_data) {
+var addFile = function(path, content, el_status, el_debug, el_data) {
   path = getMockPath();
   var payload = {
     "path": path,
@@ -57,11 +58,11 @@ var addFile = function(path, content, el_status, el_data) {
     data: JSON.stringify(payload),
     success: function(resp) {
       el_status.text("success");
-      el_data.text(JSON.stringify(resp));
+      el_debug.text(JSON.stringify(resp));
     },
     error: function(req) {
       el_status.text("failure");
-      el_data.text(JSON.stringify(req));
+      el_debug.text(JSON.stringify(req));
     }
   });
 };
