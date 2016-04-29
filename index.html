@@ -9,8 +9,10 @@
 <script type="text/javascript" src="/static/libs/github-api/1.0.0/GitHub.bundle.js"></script>
 
 <script type="text/javascript">
-var submitConfig = function(form) {
-  // $(form).children()
+var submitConfig = function(frm) {
+  for (var el in $(frm).serializeArray()) {
+    config[el.name] = config[el.value];
+  }
 }
 
 function populate(frm, data) {
@@ -21,7 +23,7 @@ function populate(frm, data) {
 
 $(function() {
   populate("#config", config);
-  /**
+  
   var gh = new GitHub({
      username: config.username,
      password: config.password
@@ -36,7 +38,7 @@ $(function() {
       $("#error_dir").text("failure");
       $("#debug_dir").text(JSON.stringify(failure));
     }
-  ); */
+  );
 });
 </script>
 
@@ -49,7 +51,7 @@ $(function() {
   <input type="text" name="username" value="" />
   <input type="password" name="password" value="" />
   <input type="text" name="repo" />
-  <button onClick="window.alert(JSON.stringify($('#config').serializeArray()));">Config</button>
+  <button onClick="updateConfig('#config');">Config</button>
 </form>
 
 <div id="error_dir"></div>
