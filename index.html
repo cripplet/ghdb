@@ -11,6 +11,7 @@
 <script type="text/javascript">
 var updateConfig = function(frm) {
   for (var el in $(frm).serializeArray()) {
+    window.alert(JSON.stringify(el));
     config[el.name] = config[el.value];
   }
   window.alert(JSON.stringify(config));
