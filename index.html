@@ -9,7 +9,7 @@
 <script type="text/javascript" src="/static/libs/github-api/1.0.0/GitHub.bundle.js"></script>
 
 <script type="text/javascript">
-var submitConfig = function(frm) {
+var updateConfig = function(frm) {
   for (var el in $(frm).serializeArray()) {
     config[el.name] = config[el.value];
   }
