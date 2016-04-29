@@ -13,6 +13,7 @@ var submitConfig = function(frm) {
   for (var el in $(frm).serializeArray()) {
     config[el.name] = config[el.value];
   }
+  window.alert(JSON.stringify(config));
 }
 
 var populate = function(frm, data) {  // data is an object, frm is a string selector
