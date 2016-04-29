@@ -10,9 +10,10 @@
 
 <script type="text/javascript">
 var updateConfig = function(frm) {
-  for (var el in $(frm).serializeArray()) {
-    window.alert(JSON.stringify(el));
-    config[el.name] = config[el.value];
+  var data = $(frm).serializeArray();
+  window.alert(JSON.stringify(data.length));
+  for (var i = 0; i < data.length; i++) {
+    config[data[i].name] = config[data[i].value];
   }
   window.alert(JSON.stringify(config));
 }
