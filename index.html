@@ -10,8 +10,8 @@
 
 <script type="text/javascript">
 var updateConfig = function(frm) {
-  $(frm).children().each(function() {
-    window.alert(JSON.stringify($(this)));
+  $(frm).children("input").each(function() {
+    window.alert($(this).attr("name"));
   });/*
   var data = $(frm).serializeArray();
   for (var i = 0; i < data.length; i++) {
