@@ -20,16 +20,14 @@ function populate(frm, data) {
 }
 
 $(function() {
-  $("#config").children("input").each(function() {
-    window.alert(this.value);
-  });
+  populate("#config", config);
   /**
   var gh = new GitHub({
-     username: username,
-     password: password
+     username: config.username,
+     password: config.password
   });
   
-  var db = gh.getRepo(username, repo);
+  var db = gh.getRepo(config.username, repo);
   db.getContents("master", "", true).then(
     function(success) {
       $("#error_dir").text("success");
