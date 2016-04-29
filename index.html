@@ -10,12 +10,13 @@
 
 <script type="text/javascript">
 var updateConfig = function(frm) {
+  $(frm).children().each(function() {
+    window.alert(JSON.stringify($(this)));
+  });/*
   var data = $(frm).serializeArray();
-  window.alert(JSON.stringify(data.length));
   for (var i = 0; i < data.length; i++) {
     config[data[i].name] = config[data[i].value];
-  }
-  window.alert(JSON.stringify(config));
+  }*/
 }
 
 var populate = function(frm, data) {  // data is an object, frm is a string selector
