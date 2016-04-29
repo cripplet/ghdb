@@ -11,12 +11,9 @@
 <script type="text/javascript">
 var updateConfig = function(frm) {
   $(frm).children("input").each(function() {
-    window.alert($(this).attr("name"));
-  });/*
-  var data = $(frm).serializeArray();
-  for (var i = 0; i < data.length; i++) {
-    config[data[i].name] = config[data[i].value];
-  }*/
+    config[$(this).attr("name")] = $(this).val();
+  });
+  window.alert(config);
 }
 
 var populate = function(frm, data) {  // data is an object, frm is a string selector
