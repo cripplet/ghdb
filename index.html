@@ -29,8 +29,8 @@ $(function() {
      password: config.password
   });
   
-  var db = gh.getRepo(config.username, repo);
-  db.getContents("master", "", true).then(
+  var db = gh.getRepo(config.username, config.repo);
+  db.getContents(config.branch, "", true).then(
     function(success) {
       $("#error_dir").text("success");
       $("#debug_dir").text(JSON.stringify(success));
@@ -50,7 +50,8 @@ $(function() {
   <input type="email" name="email" value="" />
   <input type="text" name="username" value="" />
   <input type="password" name="password" value="" />
-  <input type="text" name="repo" />
+  <input type="text" name="repo" value="" />
+  <input type="text" name="branch" value="" />
   <button onClick="updateConfig('#config');">Config</button>
 </form>
 
