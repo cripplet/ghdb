@@ -13,7 +13,6 @@ var updateConfig = function(frm) {
   $(frm).children("input").each(function() {
     config[$(this).attr("name")] = $(this).val();
   });
-  window.alert(config);
 }
 
 var populate = function(frm, data) {  // data is an object, frm is a string selector
@@ -49,12 +48,24 @@ $(function() {
 <body>
 
 <div id="config">
+  <label for="name">Committer Name</label>
   <input type="text" name="name" value="" />
+  
+  <label for="email">Committer Email</label>
   <input type="email" name="email" value="" />
+  
+  <label for="username">Username</label>
   <input type="text" name="username" value="" />
+  
+  <label for="password">Password</label>
   <input type="password" name="password" value="" />
+  
+  <label for="repo">Database Repo</label>
   <input type="text" name="repo" value="" />
+  
+  <label for="branch">Database Branch</label>
   <input type="text" name="branch" value="" />
+  
   <button onClick="updateConfig('#config');">Config</button>
 </div>
 
