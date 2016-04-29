@@ -15,15 +15,13 @@ var submitConfig = function(frm) {
   }
 }
 
-function populate(frm, data) {
+var populate = function(frm, data) {  // data is an object, frm is a string selector
   $.each(data, function(key, value){
     $('[name=' + key + ']', frm).val(value);
   });
 }
 
-$(function() {
-  populate("#config", config);
-  
+var execute = function() {
   var gh = new GitHub({
      username: config.username,
      password: config.password
@@ -39,6 +37,10 @@ $(function() {
       $("#debug_dir").text(JSON.stringify(failure));
     }
   );
+}
+  
+$(function() {
+  populate("#config", config);
 });
 </script>
 
@@ -54,6 +56,8 @@ $(function() {
   <input type="text" name="branch" value="" />
   <button onClick="updateConfig('#config');">Config</button>
 </form>
+
+<button onClick="execute();">execute</button>
 
 <div id="error_dir"></div>
 <div id="debug_dir"></div>
