@@ -1,14 +1,24 @@
-var execute = function() {
+var execute = function(table) {
   var store = new KVStore().connect(config.username, config.password);
   store.set_db(config.username, config.repo, config.branch);
-  store.query("").then(function(succ) {
-    JSON.stringify(succ);
-  });
+  $(table).empty();
+
+  var tmpl = $.templates("Name: {{:name}}");
+
   store.query("").then(
-    function(succ) {
-      $("#error_dir").text(JSON.stringify(succ));
-    }, function(fail) {
-    }
+      function(succ) {
+        for (var el in succ) {
+          succ[el].then(
+              function(s) {
+                 $(table).append(tmpl.render({name: "Minke"}))
+                 $(table).append(tmpl.render({name: s}))
+              }
+          );
+        }
+      },
+      function(fail) {
+        window.alert(JSON.stringify(fail));
+      }
   );
 }
 
@@ -29,6 +39,7 @@ KVStore.prototype.connect = function(username, password) {
     return this;
 }
 
+
 /**
  * Sets the database the KVStore will alter.
  * TODO(cripplet): If db does not exist, create it.
@@ -45,6 +56,7 @@ KVStore.prototype.set_db = function(username, db, branch) {
   this._db = this._gh.getRepo(username, db);
 }
 
+
 /**
  * Checks that the KVStore has set a database to query.
  * @throws {Error} Raise error if KVStore database is not set.
@@ -54,6 +66,7 @@ KVStore.prototype._check_db = function() {
     throw new Error("KVStore: db not set");
   }
 }
+
 
 /**
  * Gets value of key.
@@ -73,30 +86,29 @@ KVStore.prototype.get_entry = function(path) {
   );
 }
 
+
 KVStore.prototype.set_entry = function() {}
 KVStore.prototype.del_entry = function() {}
 KVStore.prototype.mov_entry = function() {}
 
+
 /**
  * Queries GitHub for the contents of a directory.
  * @param {string} path The path of the directory to query.
+ * @throws {Error} Raise error if KVStore could not query path or passed from _check_db()
  * @return {Promise}
  */
 KVStore.prototype.query = function(path) {
   this._check_db();
   return this._db.getContents(this._branch, path).then(
-      succ => {
-        var results = {}
-
-        // problem area
+      function(succ) {
+        var result = {};
         for (var i = 0; i < succ.data.length; i++) {
-          var el = succ.data[i];
-          results[el.name] = this.get_entry(el.name)
+          result[succ.data[i].name] = this.get_entry(succ.data[i].name);
         }
-
-        return results;
-      },
-      fail => {
+        return result;
+      }.bind(this),
+      function(fail) {
         throw new Error("KVStore: could not query path");
       }
   );

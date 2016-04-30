@@ -5,9 +5,11 @@
 <meta charset="utf-8">
 
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jsrender/0.9.75/jsrender.js"></script>
+<script type="text/javascript" src="/static/libs/github-api/1.0.0/GitHub.bundle.js"></script>
+
 <script type="text/javascript" src="/static/js/config.js"></script>
 <script type="text/javascript" src="/static/js/lib.js"></script>
-<script type="text/javascript" src="/static/libs/github-api/1.0.0/GitHub.bundle.js"></script>
 
 <script type="text/javascript">
 var updateConfig = function(frm) {
@@ -52,27 +54,9 @@ $(function() {
   <button onClick="updateConfig('#config');">Config</button>
 </div>
 
-<button onClick="execute();">execute</button>
+<button onClick="execute('#db');">execute</button>
 
-<div id="error_dir"></div>
-<div id="debug_dir"></div>
-<div id="data_dir"></div>
-
-<div id="error_add"></div>
-<div id="debug_add"></div>
-<div id="data_add"></div>
-
-<div id="error_get"></div>
-<div id="debug_get"></div>
-<div id="data_get"></div>
-
-<div id="error_upd"></div>
-<div id="debug_upd"></div>
-<div id="data_upd"></div>
-
-<div id="error_del"></div>
-<div id="debug_del"></div>
-<div id="data_del"></div>
+<div id="db"></div>
 
 </body>
 </html>
