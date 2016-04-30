@@ -3,15 +3,16 @@ var execute = function(table) {
   store.set_db(config.username, config.repo, config.branch);
   $(table).empty();
 
-  var tmpl = $.templates("Name: {{:name}}");
+  var tmpl = $.templates("<div class='db_entry'><div class='db_entry_name'>{{:name}}</div><div class='db_entry_content'>{{:content}}</div></div>");
 
   store.query("").then(
       function(succ) {
-        for (var el in succ) {
-          succ[el].then(
+        var keys = Object.keys(succ);
+        for (var i = 0; i < keys.length; i++) {
+          var name = keys[i];
+          succ[name].then( // not entering
               function(s) {
-                 $(table).append(tmpl.render({name: "Minke"}))
-                 $(table).append(tmpl.render({name: s}))
+                 $(table).append(tmpl.render({name: name, content: s}));
               }
           );
         }
