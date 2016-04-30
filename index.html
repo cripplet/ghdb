@@ -6,6 +6,7 @@
 
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
 <script type="text/javascript" src="/static/js/config.js"></script>
+<script type="text/javascript" src="/static/js/lib.js"></script>
 <script type="text/javascript" src="/static/libs/github-api/1.0.0/GitHub.bundle.js"></script>
 
 <script type="text/javascript">
@@ -21,24 +22,6 @@ var populate = function(frm, data) {  // data is an object, frm is a string sele
   });
 }
 
-var execute = function() {
-  var gh = new GitHub({
-     username: config.username,
-     password: config.password
-  });
-  
-  var db = gh.getRepo(config.username, config.repo);
-  db.getContents(config.branch, "", true).then(
-    function(success) {
-      $("#error_dir").text("success");
-      $("#debug_dir").text(JSON.stringify(success));
-    }, function(failure) {
-      $("#error_dir").text("failure");
-      $("#debug_dir").text(JSON.stringify(failure));
-    }
-  );
-}
-  
 $(function() {
   populate("#config", config);
 });

@@ -1,231 +1,103 @@
-/**
- * INSERT THINGS TO SAY HERE
- */
-
-
-/**
- * vars = { "name": NAME, ... }
- */
-var configure = function(vars) {
-  if (vars.hasOwnProperty("name")) {
-    name = vars.name;
-  }
-  if (vars.hasOwnProperty("email")) {
-    email = vars.email;
-  }
-  if (vars.hasOwnProperty("username")) {
-    username = vars.username;
-  }
-  if (vars.hasOwnProperty("password")) {
-    password = vars.password;
-  }
-  if (vars.hasOwnProperty("repo")) {
-    repo = vars.repo;
-  }
+var execute = function() {
+  var store = new KVStore().connect(config.username, config.password);
+  store.set_db(config.username, config.repo, config.branch);
+  store.query("").then(function(succ) {
+    JSON.stringify(succ);
+  });
+  store.query("").then(
+    function(succ) {
+      window.alert(JSON.stringify(succ));
+    }, function(fail) {
+    }
+  );
 }
 
 
-/**
- * Gets the contents of all files in a directory.
- */
-var getDir = function(path) {
-  var result = getFile(path);
-  if (result.success) {
-    for (var i = 0; i < result.data.length; i++) {
-      result.data[i].content = btoa(getRaw(result.data[i].download_url).data);
+var KVStore = class {
+  /**
+   * Connects to the GitHub account.
+   * @param {string} username GitHub username.
+   * @param {string} password GitHub password or personal access token.
+   * @return {KVStore}
+   */
+  connect(username, password) {
+    this._gh = new GitHub({
+       username: username,
+       password: password
+    });
+    return this;
+  }
+
+  /**
+   * Sets the database the KVStore will alter.
+   * TODO(cripplet): If db does not exist, create it.
+   * @param {string} username Owner of the GitHub repo.
+   * @param {string} db Name of the GitHub repo.
+   * @param {string} branch Branch of the repo storing appropriate data.
+   * @throws {Error} Raise error if KVStore has not connected.
+   */
+  set_db(username, db, branch) {
+    if (this._gh === undefined) {
+      throw new Error("KVStore: not connected");
+    }
+    this._branch = branch;
+    this._db = this._gh.getRepo(username, db);
+  }
+
+  /**
+   * Checks that the KVStore has set a database to query.
+   * @throws {Error} Raise error if KVStore database is not set.
+   */
+  _check_db() {
+    if (this._db === undefined) {
+      throw new Error("KVStore: db not set");
     }
   }
-  return result;
-}
 
+  /**
+   * Gets value of key.
+   * @param {string} path The key.
+   * @throws {Error} Raise if value could not be obtained from key.
+   * @return {Promise}
+   */
+  get_entry(path) {
+    this._check_db();
+    return this._db.getContents(this._branch, path, true).then(
+        function(succ) {
+          return succ.data;
+        },
+        function(fail) {
+          throw new Error("KVStore: could not get entry");
+        }
+    );
+  }
+  set_entry() {}
+  del_entry() {}
+  mov_entry() {}
 
-/**
- * Downloads data from raw GitHub file endpoint.
- */
-var getRaw = function(url) {
-  var success = null;
-  var data = null;
-  
-  $.ajax({
-    type: "GET",
-    url: url,
-    async: false,
-    success: function(resp) {
-      success = true;
-      data = resp;
-    },
-    error: function(req) {
-      success = false;
-      data = req;
-    }
-  });
-  
-  return {
-    "success": success,
-    "data": data
-  };
-};
+  /**
+   * Queries GitHub for the contents of a directory.
+   * @param {string} path The path of the directory to query.
+   * @return {Promise}
+   */
+  query(path) {
+    this._check_db();
 
+    return this._db.getContents(this._branch, path).then(
+        succ => {
+          var results = {}
 
-/**
- * Constructs the appropriate GitHub API endpoint.
- */
-var getEndpoint = function(path) {
-  return "https://api.github.com/repos/" + username + "/" + repo + "/contents/" + path;
-};
+          // problem area
+          for (var i = 0; i < succ.data.length; i++) {
+            var el = succ.data[i];
+            results[el.name] = this.get_entry(el.name)
+          }
 
-
-var getFile = function(path) {
-  var success = null;
-  var data = null;
-
-  $.ajax({
-    type: "GET",
-    url: getEndpoint(path),
-    dataType: "json",
-    contentType: "application/json",
-    xhrFields: { withCredentials: false },
-    headers: { 'Authorization': "Basic " + btoa(username + ":" + password) },
-    async: false,
-    success: function(resp) {
-      success = true;
-      data = resp;
-    },
-    error: function(req) {
-      success = false;
-      data = req;
-    }
-  });
-
-  return {
-    "success": success,
-    "data": data,
-  };
-}
-
-
-var delFile = function(path) {
-  var file = getFile(path);
-  
-  var sha = file.data.sha;
-  var success = null;
-  var data = null;
-  
-  var payload = {
-    "sha": sha,
-    "path": path,
-    "message": "deleted " + path,
-    "committer": {
-      "name": name,
-      "email": email
-    },
-  };
-  
-  $.ajax({
-    type: "DELETE",
-    url: getEndpoint(path),
-    dataType: "json",
-    contentType: "application/json",
-    xhrFields: { withCredentials: false },
-    headers: { 'Authorization': "Basic " + btoa(username + ":" + password) },
-    data: JSON.stringify(payload),
-    async: false,
-    success: function(resp) {
-      success = true;
-      data = resp;
-    },
-    error: function(req) {
-      success = false;
-      data = req;
-    }
-  });
-  
-  return {
-    "success": success,
-    "data": data
-  };
-};
-
-
-var updFile = function(path, content) {
-  var file = getFile(path);
-  
-  var sha = file.data.sha;
-  var success = null;
-  var data = null;
-  
-  var payload = {
-    "sha": sha,
-    "path": path,
-    "message": "updated " + path,
-    "committer": {
-      "name": name,
-      "email": email
-    },
-    "content": btoa(content)
-  };
-  
-  $.ajax({
-    type: "PUT",
-    url: getEndpoint(path),
-    dataType: "json",
-    contentType: "application/json",
-    xhrFields: { withCredentials: false },
-    headers: { 'Authorization': "Basic " + btoa(username + ":" + password) },
-    data: JSON.stringify(payload),
-    async: false,
-    success: function(resp) {
-      success = true;
-      data = resp;
-    },
-    error: function(req) {
-      success = false;
-      data = req;
-    }
-  });
-  
-  return {
-    "success": success,
-    "data": data
-  };
-};
-
-
-var addFile = function(path, content) {
-  var success = null;
-  var data = null;
-
-  var payload = {
-    "path": path,
-    "message": "added " + path,
-    "committer": {
-      "name": name,
-      "email": email
-    },
-    "content": btoa(content)
-  };
-  
-  $.ajax({
-    type: "PUT",  // not POST for some reason
-    url: getEndpoint(path),
-    dataType: "json",
-    contentType: "application/json",
-    xhrFields: { withCredentials: false },
-    headers: { 'Authorization': "Basic " + btoa(username + ":" + password) },
-    data: JSON.stringify(payload),
-    async: false,
-    success: function(resp) {
-      success = true;
-      data = resp;
-    },
-    error: function(req) {
-      success = false;
-      data = req;
-    }
-  });
-  
-  return {
-    "success": success,
-    "data": data
-  };
+          return results;
+        },
+        fail => {
+          throw new Error("KVStore: could not query path");
+        }
+    );
+  }
 };
