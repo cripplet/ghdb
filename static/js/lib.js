@@ -14,7 +14,7 @@ var execute = function(table) {
         }
       },
       function(fail) {
-        window.alert(JSON.stringify(fail));
+        window.alert("fail");
       }
   );
 }
@@ -106,11 +106,11 @@ KVStore.prototype.query = function(path) {
   this._check_db();
   return this._db.getContents(this._branch, path).then(
       function(succ) {
-        var result = {};
+        var result = [];
         for (var i = 0; i < succ.data.length; i++) {
-          result[succ.data[i].name] = this.get_entry(succ.data[i].name);
+          result.push[succ.data[i].name, this.get_entry(succ.data[i].name)];
         }
-        return result;
+        return Promise.all(result);
       }.bind(this),
       function(fail) {
         throw new Error("KVStore: could not query path");
