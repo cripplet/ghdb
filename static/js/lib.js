@@ -3,31 +3,23 @@ var execute = function(table) {
   store.set_db(config.username, config.repo, config.branch);
   $(table).empty();
 
-  var tmpl = $.templates("<div class='db_entry'><div class='db_entry_name'>{{:name}}</div><div class='db_entry_content'>{{:content}}</div></div>");
+  var tmpl = $.templates("<div class='db_entry'><div class='db_entry_path'>{{:path}}</div><div class='db_entry_content'>{{:content}}</div></div>");
 
   store.query("").then(
       function(succ) {
-        var keys = Object.keys(succ);
-        for (var i = 0; i < keys.length; i++) {
-          var name = keys[i];
-          execute_aux(table, tmpl, name, succ);
+        for (var i = 0; i < succ.length; i++) {
+          $(table).append(tmpl.render(succ[i]));
         }
       },
       function(fail) {
-        window.alert("fail");
+        throw new Error("GHDB: could not get query results.");
       }
   );
 }
 
-var execute_aux = function(table, tmpl, name, succ) {
-  succ[name].then(
-      function(s) {
-        $(table).append(tmpl.render({name: name, content: s}));
-      }
-  );
-}
 
 var KVStore = function() {}
+
 
 /**
  * Connects to the GitHub account.
@@ -82,7 +74,10 @@ KVStore.prototype.get_entry = function(path) {
   this._check_db();
   return this._db.getContents(this._branch, path, true).then(
       function(succ) {
-        return succ.data;
+        return {
+            path: path,
+            content: succ.data
+        };
       },
       function(fail) {
         throw new Error("KVStore: could not get entry");
@@ -108,7 +103,7 @@ KVStore.prototype.query = function(path) {
       function(succ) {
         var result = [];
         for (var i = 0; i < succ.data.length; i++) {
-          result.push[succ.data[i].name, this.get_entry(succ.data[i].name)];
+          result.push(this.get_entry(succ.data[i].name));
         }
         return Promise.all(result);
       }.bind(this),
