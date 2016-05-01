@@ -10,11 +10,7 @@ var execute = function(table) {
         var keys = Object.keys(succ);
         for (var i = 0; i < keys.length; i++) {
           var name = keys[i];
-          succ[name].then( // not entering
-              function(s) {
-                 $(table).append(tmpl.render({name: name, content: s}));
-              }
-          );
+          execute_aux(table, tmpl, name, succ);
         }
       },
       function(fail) {
@@ -23,6 +19,13 @@ var execute = function(table) {
   );
 }
 
+var execute_aux = function(table, tmpl, name, succ) {
+  succ[name].then(
+      function(s) {
+        $(table).append(tmpl.render({name: name, content: s}));
+      }
+  );
+}
 
 var KVStore = function() {}
 
