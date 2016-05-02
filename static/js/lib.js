@@ -5,20 +5,32 @@ var execute = function(table) {
 
   var tmpl = $.templates("<div class='db_entry'><div class='db_entry_path'>{{:path}}</div><div class='db_entry_content'>{{:content}}</div></div>");
 
-  store.query("").then(
+  store.set_entry("new_entry", "newer_content").then(
       function(succ) {
-        for (var i = 0; i < succ.length; i++) {
-          $(table).append(tmpl.render(succ[i]));
-        }
-      },
-      function(fail) {
-        throw new Error("GHDB: could not get query results.");
+        return store.mov_entry("new_entry", "new_fn");
+      }
+  ).then(
+      function(succ) {
+        return store.del_entry("new_fn");
+      }
+  ).then(
+      function(succ) {
+        store.query("").then(
+            function(succ) {
+              for (var i = 0; i < succ.length; i++) {
+                $(table).append(tmpl.render(succ[i]));
+              }
+            }
+        )
       }
   );
 }
 
 
-var KVStore = function() {}
+var KVStore = function(name, email) {
+  this._committer = name;
+  this._email = email;
+}
 
 
 /**
@@ -66,17 +78,18 @@ KVStore.prototype._check_db = function() {
 
 /**
  * Gets value of key.
- * @param {string} path The key.
- * @throws {Error} Raise if value could not be obtained from key.
+ * @param {string} path The filename.
+ * @throws {Error} Raise if value could not be obtained from filename.
  * @return {Promise}
  */
 KVStore.prototype.get_entry = function(path) {
   this._check_db();
-  return this._db.getContents(this._branch, path, true).then(
+  return this._db.getContents(this._branch, path, false).then(
       function(succ) {
         return {
-            path: path,
-            content: succ.data
+            path: succ.data.path,
+            content: atob(succ.data.content),
+            sha: succ.data.sha
         };
       },
       function(fail) {
@@ -86,9 +99,66 @@ KVStore.prototype.get_entry = function(path) {
 }
 
 
-KVStore.prototype.set_entry = function() {}
-KVStore.prototype.del_entry = function() {}
-KVStore.prototype.mov_entry = function() {}
+/**
+ * Updates a file in the GitHub repo; creates the file if none exists.
+ * @param {string} path The filename.
+ * @param {string} content The data to be written to the file.
+ * @throws {Error} Raise if file could not be written to.
+ * @return {Promise}
+ */
+KVStore.prototype.set_entry = function(path, content) {
+  this._check_db();
+  options = {
+    committer: this._committer,
+    email: this._email,
+    encode: false
+  }
+  return this._db.writeFile(this._branch, path, btoa(content), "updated " + path, options).then(
+      function(succ) {
+        return {
+            path: path,
+            content: content,
+            sha: succ.data.content.sha
+        };
+      },
+      function(fail) {
+        throw new Error("KVStore: could not write entry");
+      }
+  );
+}
+
+
+/**
+ * Deletes a file in the GitHub repo.
+ * @param {string} path The filename.
+ * @throws {Error} Raise if the file could not be deleted.
+ * @return {Promise}
+ */
+KVStore.prototype.del_entry = function(path) {
+  this._check_db();
+  // TODO(cripplet): figure out why deleteFile is not returning Promise
+  return this._db.deleteFile(this._branch, path).then(
+      function(succ) {
+        return succ;
+      },
+      function(fail) {
+        throw new Error("KVStore: could not delete file.");
+      }
+  );
+}
+
+
+/**
+ * Deletes a file in the GitHub repo.
+ * @param {string} src Current file path.
+ * @param {string} dst Destination file path.
+ * @throws {Error} Raise if the file could not be moved.
+ * @return {Promise}
+ */
+KVStore.prototype.mov_entry = function(src, dst) {
+  this._check_db();
+  return this._db.move(this._branch, src, dst);
+}
 
 
 /**
