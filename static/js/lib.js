@@ -7,21 +7,11 @@ var execute = function(table) {
 
   store.set_entry("new_entry", "newer_content").then(
       function(succ) {
-        return store.mov_entry("new_entry", "new_fn");
-      }
-  ).then(
-      function(succ) {
-        return store.del_entry("new_fn");
-      }
-  ).then(
-      function(succ) {
-        store.query("").then(
+        return store.mov_entry("new_entry", "new_fn").then(
             function(succ) {
-              for (var i = 0; i < succ.length; i++) {
-                $(table).append(tmpl.render(succ[i]));
-              }
+              return store.del_entry("new_fn");
             }
-        )
+        );
       }
   );
 }
@@ -136,7 +126,6 @@ KVStore.prototype.set_entry = function(path, content) {
  */
 KVStore.prototype.del_entry = function(path) {
   this._check_db();
-  // TODO(cripplet): figure out why deleteFile is not returning Promise
   return this._db.deleteFile(this._branch, path).then(
       function(succ) {
         return succ;
@@ -156,8 +145,17 @@ KVStore.prototype.del_entry = function(path) {
  * @return {Promise}
  */
 KVStore.prototype.mov_entry = function(src, dst) {
+  // TODO(cripplet) use db.move(src, dst), make atomic
   this._check_db();
-  return this._db.move(this._branch, src, dst);
+  return this.get_entry(src).then(
+      function(succ) {
+        return this.set_entry(dst, succ.content).then(
+            function(succ) {
+              return this.del_entry(src);
+            }.bind(this)
+        )
+      }.bind(this)
+  );
 }
 
 
