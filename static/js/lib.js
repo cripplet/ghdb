@@ -147,15 +147,7 @@ KVStore.prototype.del_entry = function(path) {
 KVStore.prototype.mov_entry = function(src, dst) {
   // TODO(cripplet) use db.move(src, dst), make atomic
   this._check_db();
-  return this.get_entry(src).then(
-      function(succ) {
-        return this.set_entry(dst, succ.content).then(
-            function(succ) {
-              return this.del_entry(src);
-            }.bind(this)
-        )
-      }.bind(this)
-  );
+  return this._db.move(this._branch, src, dst);
 }
 
 
