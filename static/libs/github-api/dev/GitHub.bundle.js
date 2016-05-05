@@ -1061,9 +1061,9 @@
             var _this5 = this;
 
             return this._updateTree(branch, function (err, latestCommit) {
-               _this5.getTree(latestCommit + '?recursive=true', function (err, tree) {
+               _this5.getTree(latestCommit.ref + '?recursive=true', function (err, tree) {
                   // Update Tree
-                  tree.forEach(function (ref) {
+                  tree.tree.forEach(function (ref) {
                      if (ref.path === path) {
                         ref.path = newPath;
                      }
@@ -1073,7 +1073,7 @@
                      }
                   });
 
-                  _this5.postTree(tree, function (err, rootTree) {
+                  _this5.createTree(tree, function (err, rootTree) {
                      _this5.commit(latestCommit, rootTree, 'Deleted ' + path, function (err, commit) {
                         _this5.updateHead(branch, commit, cb);
                      });
