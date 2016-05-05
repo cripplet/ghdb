@@ -1073,8 +1073,8 @@
                      }
                   });
 
-                  _this5.createTree(tree, function (err, rootTree) {
-                     _this5.commit(latestCommit, rootTree, 'Deleted ' + path, function (err, commit) {
+                  _this5.createTree(tree, tree.sha).catch(function (err) {
+                     _this5.commit(latestCommit, tree.sha, 'Deleted ' + path, function (err, commit) {
                         _this5.updateHead(branch, commit, cb);
                      });
                   });
