@@ -416,27 +416,72 @@
     _createClass(Issue, [{
       key: 'createIssue',
       value: function createIssue(issueData, cb) {
-        this._request('POST', '/repos/' + this.__repository + '/issues', issueData, cb);
+        return this._request('POST', '/repos/' + this.__repository + '/issues', issueData, cb);
       }
     }, {
       key: 'listIssues',
       value: function listIssues(options, cb) {
-        this._requestAllPages('/repos/' + this.__repository + '/issues', options, cb);
+        return this._requestAllPages('/repos/' + this.__repository + '/issues', options, cb);
+      }
+    }, {
+      key: 'listIssueComments',
+      value: function listIssueComments(issue, cb) {
+        return this._request('GET', '/repos/' + this.__repository + '/issues/' + issue + '/comments', null, cb); // jscs:ignore
+      }
+    }, {
+      key: 'getIssueComment',
+      value: function getIssueComment(id, cb) {
+        return this._request('GET', '/repos/' + this.__repository + '/issues/comments/' + id, null, cb); // jscs:ignore
       }
     }, {
       key: 'createIssueComment',
       value: function createIssueComment(issue, comment, cb) {
-        this._request('POST', '/repos/' + this.__repository + '/issues/' + issue + '/comments', { body: comment }, cb); // jscs:ignore
+        return this._request('POST', '/repos/' + this.__repository + '/issues/' + issue + '/comments', { body: comment }, cb); // jscs:ignore
+      }
+    }, {
+      key: 'editIssueComment',
+      value: function editIssueComment(id, comment, cb) {
+        return this._request('PATCH', '/repos/' + this.__repository + '/issues/comments/' + id, { body: comment }, cb); // jscs:ignore
+      }
+    }, {
+      key: 'deleteIssueComment',
+      value: function deleteIssueComment(id, cb) {
+        return this._request('DELETE', '/repos/' + this.__repository + '/issues/comments/' + id, null, cb); // jscs:ignore
       }
     }, {
       key: 'editIssue',
       value: function editIssue(issue, issueData, cb) {
-        this._request('PATCH', '/repos/' + this.__repository + '/issues/' + issue, issueData, cb);
+        return this._request('PATCH', '/repos/' + this.__repository + '/issues/' + issue, issueData, cb);
       }
     }, {
       key: 'getIssue',
       value: function getIssue(issue, cb) {
-        this._request('GET', '/repos/' + this.__repository + '/issues/' + issue, null, cb);
+        return this._request('GET', '/repos/' + this.__repository + '/issues/' + issue, null, cb);
+      }
+    }, {
+      key: 'listMilestones',
+      value: function listMilestones(options, cb) {
+        return this._request('GET', '/repos/' + this.__repository + '/milestones', options, cb);
+      }
+    }, {
+      key: 'getMilestone',
+      value: function getMilestone(milestone, cb) {
+        return this._request('GET', '/repos/' + this.__repository + '/milestones/' + milestone, null, cb);
+      }
+    }, {
+      key: 'createMilestone',
+      value: function createMilestone(milestoneData, cb) {
+        return this._request('POST', '/repos/' + this.__repository + '/milestones', milestoneData, cb);
+      }
+    }, {
+      key: 'editMilestone',
+      value: function editMilestone(milestone, milestoneData, cb) {
+        return this._request('PATCH', '/repos/' + this.__repository + '/milestones/' + milestone, milestoneData, cb);
+      }
+    }, {
+      key: 'deleteMilestone',
+      value: function deleteMilestone(milestone, cb) {
+        return this._request('DELETE', '/repos/' + this.__repository + '/milestones/' + milestone, null, cb);
       }
     }]);
 
@@ -549,7 +594,7 @@
     _createClass(Organization, [{
       key: 'createRepo',
       value: function createRepo(options, cb) {
-        this._request('POST', '/orgs/' + this.__name + '/repos', options, cb);
+        return this._request('POST', '/orgs/' + this.__name + '/repos', options, cb);
       }
     }, {
       key: 'getRepos',
@@ -557,6 +602,16 @@
         var requestOptions = this._getOptionsWithDefaults({ direction: 'desc' });
 
         return this._requestAllPages('/orgs/' + this.__name + '/repos', requestOptions, cb);
+      }
+    }, {
+      key: 'isMember',
+      value: function isMember(username, cb) {
+        return this._request204or404('/orgs/' + this.__name + '/members/' + username, null, cb);
+      }
+    }, {
+      key: 'listMembers',
+      value: function listMembers(options, cb) {
+        return this._request('GET', '/orgs/' + this.__name + '/members', options, cb);
       }
     }]);
 
@@ -950,7 +1005,7 @@
             };
 
             return this._request('POST', '/repos/' + this.__fullname + '/git/commits', data, cb).then(function (response) {
-               _this2.__currentTree.sha = response.sha; // Update latest commit
+               _this2.__currentTree.sha = response.data.sha; // Update latest commit
                return response;
             });
          }
@@ -1057,25 +1112,26 @@
          }
       }, {
          key: 'move',
-         value: function move(branch, path, newPath, cb) {
+         value: function move(branch, old_path, new_path, cb) {
             var _this5 = this;
 
-            return this._updateTree(branch, function (err, latestCommit) {
-               _this5.getTree(latestCommit.ref + '?recursive=true', function (err, tree) {
-                  // Update Tree
-                  tree.tree.forEach(function (ref) {
-                     if (ref.path === path) {
-                        ref.path = newPath;
+            return this.getRef('heads/' + branch).then(function (response) {
+               return _this5.getTree(response.data.object.sha + '?recursive=true').then(function (response) {
+                  var _resp = response;
+                  response.data.tree.forEach(function (ref) {
+                     if (ref.path === old_path) {
+                        ref.path = new_path;
                      }
-
                      if (ref.type === 'tree') {
                         delete ref.sha;
                      }
                   });
-
-                  _this5.createTree(tree, tree.sha).catch(function (err) {
-                     _this5.commit(latestCommit, tree.sha, 'Deleted ' + path, function (err, commit) {
-                        _this5.updateHead(branch, commit, cb);
+                  return _this5.createTree(response.data.tree, response.data.sha).then(function (response) {
+                     return _this5.commit(_resp.data.sha, response.data.sha, 'Deleted ' + old_path) // minke
+                     .then(function (response) {
+                        return _this5.updateHead(branch, response.data.sha, cb).catch(function (err) {
+                           return err;
+                        });
                      });
                   });
                });
@@ -1087,13 +1143,17 @@
             var _this6 = this;
 
             if (branch === this.__currentTree.branch && this.__currentTree.sha) {
-               return cb(null, this.__currentTree.sha);
+               if (cb != undefined) {
+                  return cb(null, this.__currentTree.sha);
+               }
             }
 
-            this.getRef('heads/' + branch, function (err, sha) {
+            return this.getRef('heads/' + branch, function (err, sha) {
                _this6.__currentTree.branch = branch;
                _this6.__currentTree.sha = sha;
-               cb(err, sha);
+               if (cb != undefined) {
+                  cb(err, sha);
+               }
             });
          }
       }, {
@@ -1148,6 +1208,11 @@
             return this._request('PATCH', '/repos/' + this.__fullname + '/releases/' + id, options, cb);
          }
       }, {
+         key: 'listReleases',
+         value: function listReleases(cb) {
+            return this._request('GET', '/repos/' + this.__fullname + '/releases', null, cb);
+         }
+      }, {
          key: 'getRelease',
          value: function getRelease(id, cb) {
             return this._request('GET', '/repos/' + this.__fullname + '/releases/' + id, null, cb);
@@ -1191,6 +1256,30 @@
       return obj && obj.__esModule ? obj : {
          default: obj
       };
+   }
+
+   function _possibleConstructorReturn(self, call) {
+      if (!self) {
+         throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+      }
+
+      return call && (typeof call === "object" || typeof call === "function") ? call : self;
+   }
+
+   function _inherits(subClass, superClass) {
+      if (typeof superClass !== "function" && superClass !== null) {
+         throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+      }
+
+      subClass.prototype = Object.create(superClass && superClass.prototype, {
+         constructor: {
+            value: subClass,
+            enumerable: false,
+            writable: true,
+            configurable: true
+         }
+      });
+      if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
    }
 
    var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
@@ -1381,7 +1470,7 @@
 
             results = results || [];
 
-            return this._request('GET', path, null).then(function (response) {
+            return this._request('GET', path, options).then(function (response) {
                results.push.apply(results, response.data);
 
                var nextUrl = getNextPage(response.headers.link);
@@ -1408,14 +1497,24 @@
    // ////////////////////////// //
    //  Private helper functions  //
    // ////////////////////////// //
-   function buildError(path, response) {
-      return {
-         path: path,
-         request: response.config,
-         response: response,
-         status: response.status
-      };
-   }
+
+   var ResponseError = function (_Error) {
+      _inherits(ResponseError, _Error);
+
+      function ResponseError(path, response) {
+         _classCallCheck(this, ResponseError);
+
+         var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(ResponseError).call(this, 'error making request ' + response.config.method + ' ' + response.config.url));
+
+         _this2.path = path;
+         _this2.request = response.config;
+         _this2.response = response;
+         _this2.status = response.status;
+         return _this2;
+      }
+
+      return ResponseError;
+   }(Error);
 
    var METHODS_WITH_NO_BODY = ['GET', 'HEAD', 'DELETE'];
    function methodHasNoBody(method) {
@@ -1438,10 +1537,12 @@
    function callbackErrorOrThrow(cb, path) {
       return function handler(response) {
          log('error making request ' + response.config.method + ' ' + response.config.url + ' ' + JSON.stringify(response.data));
-         var error = buildError(path, response);
+         var error = new ResponseError(path, response);
          if (cb) {
+            log('going to error callback');
             cb(error);
          } else {
+            log('throwing error');
             throw error;
          }
       };
@@ -1548,10 +1649,19 @@
     }
 
     /**
+     * Available search options
+     * @see https://developer.github.com/v3/search/#parameters
+     * @typedef {Object} Search.Params
+     * @param {string} q - the query to make
+     * @param {string} sort - the sort field, one of `stars`, `forks`, or `updated`.
+     *                      Default is [best match](https://developer.github.com/v3/search/#ranking-search-results)
+     * @param {string} order - the ordering, either `asc` or `desc`
+     */
+    /**
      * Perform a search on the GitHub API
      * @private
      * @param {string} path - the scope of the search
-     * @param {Object} [withOptions] - additional parameters for the search
+     * @param {Search.Params} [withOptions] - additional parameters for the search
      * @param {Requestable.callback} [cb] - will receive the results of the search
      * @return {Promise} - the promise for the http request
      */
@@ -1574,7 +1684,7 @@
         });
 
         log('searching ' + path + ' with options:', requestOptions);
-        return this._request('GET', '/search/' + path, requestOptions, cb);
+        return this._requestAllPages('/search/' + path, requestOptions, cb);
       }
     }, {
       key: 'forRepositories',
@@ -4802,6 +4912,9 @@ var currentQueue;
 var queueIndex = -1;
 
 function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
     draining = false;
     if (currentQueue.length) {
         queue = currentQueue.concat(queue);
@@ -5388,7 +5501,7 @@ function plural(ms, n, name) {
  * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
  * @license   Licensed under MIT license
  *            See https://raw.githubusercontent.com/jakearchibald/es6-promise/master/LICENSE
- * @version   3.1.2
+ * @version   3.2.1
  */
 
 (function() {
@@ -5446,7 +5559,7 @@ function plural(ms, n, name) {
     var lib$es6$promise$asap$$browserWindow = (typeof window !== 'undefined') ? window : undefined;
     var lib$es6$promise$asap$$browserGlobal = lib$es6$promise$asap$$browserWindow || {};
     var lib$es6$promise$asap$$BrowserMutationObserver = lib$es6$promise$asap$$browserGlobal.MutationObserver || lib$es6$promise$asap$$browserGlobal.WebKitMutationObserver;
-    var lib$es6$promise$asap$$isNode = typeof process !== 'undefined' && {}.toString.call(process) === '[object process]';
+    var lib$es6$promise$asap$$isNode = typeof self === 'undefined' && typeof process !== 'undefined' && {}.toString.call(process) === '[object process]';
 
     // test for web worker but not in IE10
     var lib$es6$promise$asap$$isWorker = typeof Uint8ClampedArray !== 'undefined' &&
@@ -5536,19 +5649,19 @@ function plural(ms, n, name) {
     }
     function lib$es6$promise$then$$then(onFulfillment, onRejection) {
       var parent = this;
-      var state = parent._state;
-
-      if (state === lib$es6$promise$$internal$$FULFILLED && !onFulfillment || state === lib$es6$promise$$internal$$REJECTED && !onRejection) {
-        return this;
-      }
 
       var child = new this.constructor(lib$es6$promise$$internal$$noop);
-      var result = parent._result;
+
+      if (child[lib$es6$promise$$internal$$PROMISE_ID] === undefined) {
+        lib$es6$promise$$internal$$makePromise(child);
+      }
+
+      var state = parent._state;
 
       if (state) {
         var callback = arguments[state - 1];
         lib$es6$promise$asap$$asap(function(){
-          lib$es6$promise$$internal$$invokeCallback(state, child, callback, result);
+          lib$es6$promise$$internal$$invokeCallback(state, child, callback, parent._result);
         });
       } else {
         lib$es6$promise$$internal$$subscribe(parent, child, onFulfillment, onRejection);
@@ -5570,6 +5683,7 @@ function plural(ms, n, name) {
       return promise;
     }
     var lib$es6$promise$promise$resolve$$default = lib$es6$promise$promise$resolve$$resolve;
+    var lib$es6$promise$$internal$$PROMISE_ID = Math.random().toString(36).substring(16);
 
     function lib$es6$promise$$internal$$noop() {}
 
@@ -5800,6 +5914,18 @@ function plural(ms, n, name) {
       }
     }
 
+    var lib$es6$promise$$internal$$id = 0;
+    function lib$es6$promise$$internal$$nextId() {
+      return lib$es6$promise$$internal$$id++;
+    }
+
+    function lib$es6$promise$$internal$$makePromise(promise) {
+      promise[lib$es6$promise$$internal$$PROMISE_ID] = lib$es6$promise$$internal$$id++;
+      promise._state = undefined;
+      promise._result = undefined;
+      promise._subscribers = [];
+    }
+
     function lib$es6$promise$promise$all$$all(entries) {
       return new lib$es6$promise$enumerator$$default(this, entries).promise;
     }
@@ -5808,28 +5934,18 @@ function plural(ms, n, name) {
       /*jshint validthis:true */
       var Constructor = this;
 
-      var promise = new Constructor(lib$es6$promise$$internal$$noop);
-
       if (!lib$es6$promise$utils$$isArray(entries)) {
-        lib$es6$promise$$internal$$reject(promise, new TypeError('You must pass an array to race.'));
-        return promise;
+        return new Constructor(function(resolve, reject) {
+          reject(new TypeError('You must pass an array to race.'));
+        });
+      } else {
+        return new Constructor(function(resolve, reject) {
+          var length = entries.length;
+          for (var i = 0; i < length; i++) {
+            Constructor.resolve(entries[i]).then(resolve, reject);
+          }
+        });
       }
-
-      var length = entries.length;
-
-      function onFulfillment(value) {
-        lib$es6$promise$$internal$$resolve(promise, value);
-      }
-
-      function onRejection(reason) {
-        lib$es6$promise$$internal$$reject(promise, reason);
-      }
-
-      for (var i = 0; promise._state === lib$es6$promise$$internal$$PENDING && i < length; i++) {
-        lib$es6$promise$$internal$$subscribe(Constructor.resolve(entries[i]), undefined, onFulfillment, onRejection);
-      }
-
-      return promise;
     }
     var lib$es6$promise$promise$race$$default = lib$es6$promise$promise$race$$race;
     function lib$es6$promise$promise$reject$$reject(reason) {
@@ -5841,7 +5957,6 @@ function plural(ms, n, name) {
     }
     var lib$es6$promise$promise$reject$$default = lib$es6$promise$promise$reject$$reject;
 
-    var lib$es6$promise$promise$$counter = 0;
 
     function lib$es6$promise$promise$$needsResolver() {
       throw new TypeError('You must pass a resolver function as the first argument to the promise constructor');
@@ -5956,9 +6071,8 @@ function plural(ms, n, name) {
       @constructor
     */
     function lib$es6$promise$promise$$Promise(resolver) {
-      this._id = lib$es6$promise$promise$$counter++;
-      this._state = undefined;
-      this._result = undefined;
+      this[lib$es6$promise$$internal$$PROMISE_ID] = lib$es6$promise$$internal$$nextId();
+      this._result = this._state = undefined;
       this._subscribers = [];
 
       if (lib$es6$promise$$internal$$noop !== resolver) {
@@ -6209,7 +6323,11 @@ function plural(ms, n, name) {
       this._instanceConstructor = Constructor;
       this.promise = new Constructor(lib$es6$promise$$internal$$noop);
 
-      if (Array.isArray(input)) {
+      if (!this.promise[lib$es6$promise$$internal$$PROMISE_ID]) {
+        lib$es6$promise$$internal$$makePromise(this.promise);
+      }
+
+      if (lib$es6$promise$utils$$isArray(input)) {
         this._input     = input;
         this.length     = input.length;
         this._remaining = input.length;
@@ -6226,13 +6344,13 @@ function plural(ms, n, name) {
           }
         }
       } else {
-        lib$es6$promise$$internal$$reject(this.promise, this._validationError());
+        lib$es6$promise$$internal$$reject(this.promise, lib$es6$promise$enumerator$$validationError());
       }
     }
 
-    lib$es6$promise$enumerator$$Enumerator.prototype._validationError = function() {
+    function lib$es6$promise$enumerator$$validationError() {
       return new Error('Array Methods must be provided an Array');
-    };
+    }
 
     lib$es6$promise$enumerator$$Enumerator.prototype._enumerate = function() {
       var length  = this.length;
