@@ -103,7 +103,7 @@ KVStore.prototype.set_entry = function(path, content) {
     email: this._email,
     encode: false
   }
-  return this._db.writeFile(this._branch, path, btoa(content), "updated " + path, options).then(
+  return this._db.writeFile(this._branch, path, btoa(content), `Updated the file at '${path}'`, options).then(
       function(succ) {
         return {
             path: path,

@@ -1126,8 +1126,8 @@
                         delete ref.sha;
                      }
                   });
-                  return _this5.createTree(response.data.tree, response.data.sha).then(function (response) {
-                     return _this5.commit(_resp.data.sha, response.data.sha, 'Deleted ' + old_path).then(function (response) {
+                  return _this5.createTree(response.data.tree).then(function (response) {
+                     return _this5.commit(_resp.data.sha, response.data.sha, 'Renamed \'' + old_path + '\' to \'' + new_path + '\'').then(function (response) {
                         return _this5.updateHead('heads/' + branch, response.data.sha, true, cb);
                      });
                   });
