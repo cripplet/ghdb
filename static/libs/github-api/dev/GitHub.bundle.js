@@ -1011,8 +1011,8 @@
          }
       }, {
          key: 'updateHead',
-         value: function updateHead(ref, commitSHA, cb) {
-            return this._request('PATCH', '/repos/' + this.__fullname + '/git/refs/' + ref, { sha: commitSHA }, cb);
+         value: function updateHead(ref, commitSHA, force, cb) {
+            return this._request('PATCH', '/repos/' + this.__fullname + '/git/refs/' + ref, { sha: commitSHA, force: force }, cb);
          }
       }, {
          key: 'getDetails',
@@ -1128,9 +1128,7 @@
                   });
                   return _this5.createTree(response.data.tree, response.data.sha).then(function (response) {
                      return _this5.commit(_resp.data.sha, response.data.sha, 'Deleted ' + old_path).then(function (response) {
-                        return _this5.updateHead(branch, response.data.sha, cb).catch(function (err) {
-                           return err;
-                        });
+                        return _this5.updateHead('heads/' + branch, response.data.sha, true, cb);
                      });
                   });
                });
