@@ -1127,8 +1127,7 @@
                      }
                   });
                   return _this5.createTree(response.data.tree, response.data.sha).then(function (response) {
-                     return _this5.commit(_resp.data.sha, response.data.sha, 'Deleted ' + old_path) // minke
-                     .then(function (response) {
+                     return _this5.commit(_resp.data.sha, response.data.sha, 'Deleted ' + old_path).then(function (response) {
                         return _this5.updateHead(branch, response.data.sha, cb).catch(function (err) {
                            return err;
                         });
@@ -1138,28 +1137,9 @@
             });
          }
       }, {
-         key: '_updateTree',
-         value: function _updateTree(branch, cb) {
-            var _this6 = this;
-
-            if (branch === this.__currentTree.branch && this.__currentTree.sha) {
-               if (cb != undefined) {
-                  return cb(null, this.__currentTree.sha);
-               }
-            }
-
-            return this.getRef('heads/' + branch, function (err, sha) {
-               _this6.__currentTree.branch = branch;
-               _this6.__currentTree.sha = sha;
-               if (cb != undefined) {
-                  cb(err, sha);
-               }
-            });
-         }
-      }, {
          key: 'writeFile',
          value: function writeFile(branch, path, content, message, options, cb) {
-            var _this7 = this;
+            var _this6 = this;
 
             if (typeof options === 'function') {
                cb = options;
@@ -1177,9 +1157,9 @@
 
             return this.getSha(branch, filePath).then(function (response) {
                commit.sha = response.data.sha;
-               return _this7._request('PUT', '/repos/' + _this7.__fullname + '/contents/' + filePath, commit, cb);
+               return _this6._request('PUT', '/repos/' + _this6.__fullname + '/contents/' + filePath, commit, cb);
             }, function () {
-               return _this7._request('PUT', '/repos/' + _this7.__fullname + '/contents/' + filePath, commit, cb);
+               return _this6._request('PUT', '/repos/' + _this6.__fullname + '/contents/' + filePath, commit, cb);
             });
          }
       }, {
