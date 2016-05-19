@@ -1,17 +1,20 @@
-var execute = function(table) {
-  var store = new KVStore().connect(config.username, config.password);
-  store.set_db(config.username, config.repo, config.branch);
-  $(table).empty();
+var _string = function() {
+  return Math.random().toString(36).substring(2);
+}
 
-  var tmpl = $.templates("<div class='db_entry'><div class='db_entry_path'>{{:path}}</div><div class='db_entry_content'>{{:content}}</div></div>");
+var generate = function(n) {
+  var s = "";
+  for(var i = 0; i < n; i++ ) {
+    s = s.concat(_string());
+  }
+  return s.substring(0, n);
+}
 
-  store.set_entry("new_entry", "newer_content").then(
-      function(succ) {
-        return store.mov_entry("new_entry", "new_fn").then(
-            function(succ) {
-              return store.del_entry("new_fn");
-            }
-        );
+
+var execute = function(store, table) {
+  store.set_entry(generate(10), generate(20)).then(
+      (succ) => {
+        store.render(table);
       }
   );
 }
@@ -20,6 +23,25 @@ var execute = function(table) {
 var KVStore = function(name, email) {
   this._committer = name;
   this._email = email;
+  this._table = {};
+}
+
+
+KVStore.prototype.render = function(table) {
+  $(table).empty();
+
+  var _table = [];
+  for (var key in this._table) {
+    if (this._table.hasOwnProperty(key)) {
+      _table.push({
+          "path": key,
+          "content": this._table[key]
+      });
+    }
+  }
+
+  var tmpl = $.templates("<div class='db_entry'><div class='db_entry_path'>{{:path}}</div><div class='db_entry_content'>{{:content}}</div></div>");
+  $(table).html(tmpl.render(_table));
 }
 
 
@@ -75,14 +97,14 @@ KVStore.prototype._check_db = function() {
 KVStore.prototype.get_entry = function(path) {
   this._check_db();
   return this._db.getContents(this._branch, path, false).then(
-      function(succ) {
+      (succ) => {
         return {
             path: succ.data.path,
             content: atob(succ.data.content),
             sha: succ.data.sha
         };
       },
-      function(fail) {
+      (fail) => {
         throw new Error("KVStore: could not get entry");
       }
   );
@@ -104,14 +126,15 @@ KVStore.prototype.set_entry = function(path, content) {
     encode: false
   }
   return this._db.writeFile(this._branch, path, btoa(content), `Updated the file at '${path}'`, options).then(
-      function(succ) {
+      (succ) => {
+        this._table[path] = content;
         return {
             path: path,
             content: content,
             sha: succ.data.content.sha
         };
       },
-      function(fail) {
+      (fail) => {
         throw new Error("KVStore: could not write entry");
       }
   );
@@ -127,10 +150,11 @@ KVStore.prototype.set_entry = function(path, content) {
 KVStore.prototype.del_entry = function(path) {
   this._check_db();
   return this._db.deleteFile(this._branch, path).then(
-      function(succ) {
+      (succ) => {
+        delete this._table[path];
         return succ;
       },
-      function(fail) {
+      (fail) => {
         throw new Error("KVStore: could not delete file.");
       }
   );
@@ -145,9 +169,17 @@ KVStore.prototype.del_entry = function(path) {
  * @return {Promise}
  */
 KVStore.prototype.mov_entry = function(src, dst) {
-  // TODO(cripplet) use db.move(src, dst), make atomic
   this._check_db();
-  return this._db.move(this._branch, src, dst);
+  return this._db.move(this._branch, src, dst).then(
+      (succ) => {
+        this._table[dst] = this._table[src];
+        delete this._table[src];
+        return succ;
+      },
+      (fail) => {
+        throw new Error("KVStore: could not move file.");
+      }
+  );
 }
 
 
@@ -159,15 +191,19 @@ KVStore.prototype.mov_entry = function(src, dst) {
  */
 KVStore.prototype.query = function(path) {
   this._check_db();
+  this._table = {};
   return this._db.getContents(this._branch, path).then(
-      function(succ) {
-        var result = [];
+      (succ) => {
         for (var i = 0; i < succ.data.length; i++) {
-          result.push(this.get_entry(succ.data[i].name));
+          this.get_entry(succ.data[i].name).then(
+              (succ) => {
+                this._table[succ.path] = succ.content;
+              }
+          );
         }
-        return Promise.all(result);
-      }.bind(this),
-      function(fail) {
+        return Promise.all(succ.data);
+      },
+      (fail) => {
         throw new Error("KVStore: could not query path");
       }
   );

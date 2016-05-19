@@ -16,16 +16,27 @@ var updateConfig = function(frm) {
   $(frm).children("input").each(function() {
     config[$(this).attr("name")] = $(this).val();
   });
+  window.store.connect(config.username, config.password);
+  store.set_db(config.username, config.repo, config.branch);
 }
 
-var populate = function(frm, data) {  // data is an object, frm is a string selector
+var populate_config = function(frm, data) {  // data is an object, frm is a string selector
   $.each(data, function(key, value){
     $('[name=' + key + ']', frm).val(value);
   });
 }
 
 $(function() {
-  populate("#config", config);
+  populate_config("#config", config);
+
+  window.store = new KVStore().connect(config.username, config.password);
+  store.set_db(config.username, config.repo, config.branch);
+  store.query().then(
+    (succ) => {
+      window.alert(JSON.stringify(store._table));
+      store.render('#db');
+    }
+  );
 });
 </script>
 
@@ -54,7 +65,7 @@ $(function() {
   <button onClick="updateConfig('#config');">Config</button>
 </div>
 
-<button onClick="execute('#db');">execute</button>
+<button onClick="execute(store, '#db');">execute</button>
 
 <div id="db"></div>
 
